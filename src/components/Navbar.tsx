@@ -100,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentMode, setMode }) => {
         </button>
         <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
           <Zap className="w-3.5 h-3.5" />
-          <span>0.00% Error</span>
+          <span>Sin calibrar</span>
         </div>
         <button
           onClick={() => setMode('recorder')}
