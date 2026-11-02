@@ -42,7 +42,7 @@ export const AudioRecorderTab: React.FC<AudioRecorderTabProps> = ({ onAddTransmi
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const blobUrl = URL.createObjectURL(audioBlob);
         const sizeKb = Math.round(audioBlob.size / 1024);
@@ -53,7 +53,7 @@ export const AudioRecorderTab: React.FC<AudioRecorderTabProps> = ({ onAddTransmi
           blobUrl,
           durationSeconds: recordingTime,
           sizeKb,
-          transcript: `Audio grabado por micrófono (${recordingTime}s) - Análisis Frecuencial OK`,
+          transcript: `Audio grabado por micrófono (${recordingTime}s) · Hz no medidos`,
         };
 
         setRecordings((prev) => [newRec, ...prev]);
@@ -63,6 +63,8 @@ export const AudioRecorderTab: React.FC<AudioRecorderTabProps> = ({ onAddTransmi
         // Stop stream tracks
         stream.getTracks().forEach((t) => t.stop());
 
+        const digest = await crypto.subtle.digest('SHA-256', await audioBlob.arrayBuffer());
+        const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
         onAddTransmission({
           id: newRec.id,
           timestamp: Date.now(),
@@ -70,10 +72,10 @@ export const AudioRecorderTab: React.FC<AudioRecorderTabProps> = ({ onAddTransmi
           source: 'Micrófono de Audífono (AUX)',
           target: 'Grabador Local',
           message: newRec.transcript,
-          frequencyHz: 528.0,
-          amplitude: 1.0,
-          senopticError: 0.00,
-          encryptionHash: '0x' + Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+          frequencyHz: 0,
+          amplitude: 0,
+          senopticError: null,
+          encryptionHash: 'sha256:' + hash,
           status: 'verificado',
         });
       };
@@ -128,7 +130,7 @@ export const AudioRecorderTab: React.FC<AudioRecorderTabProps> = ({ onAddTransmi
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Grabación Directa con Audífonos (AUX)</h2>
             <p className="text-sm text-slate-400 mt-1 max-w-xl">
-              Graba voz, tonos o señales senoidales directamente usando el micrófono de tus audífonos. Reproduce, analiza y guarda tus grabaciones con integridad cifrada.
+              Graba audio directamente con el micrófono disponible. Reproduce y descarga tus grabaciones con hash SHA-256 para comprobar integridad (sin cifrado).
             </p>
           </div>
           <div className="flex items-center gap-3 bg-slate-950/80 border border-slate-800 rounded-xl px-5 py-4">
