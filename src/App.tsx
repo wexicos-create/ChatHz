@@ -16,34 +16,7 @@ export default function App() {
   const [isReceiving, setIsReceiving] = useState<boolean>(false);
   const [isMobileFrame, setIsMobileFrame] = useState<boolean>(false);
 
-  const [records, setRecords] = useState<TransmissionRecord[]>([
-    {
-      id: 'TX-7892Q',
-      timestamp: Date.now() - 1000 * 60 * 15,
-      direction: 'TX',
-      source: 'Usuario (Operador Terrestre)',
-      target: 'Extraterrestre (Pléyades Sector 7)',
-      message: 'Saludos fraternales desde la Tierra. Frecuencia armónica establecida en 528Hz.',
-      frequencyHz: 528.0,
-      amplitude: 1.0,
-      senopticError: 0.00,
-      encryptionHash: '0x8f9a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a',
-      status: 'completado',
-    },
-    {
-      id: 'RX-4412X',
-      timestamp: Date.now() - 1000 * 60 * 5,
-      direction: 'RX',
-      source: 'Divine Node (Alpha-9 / Fuente Central)',
-      target: 'Usuario (Receptor Cuántico)',
-      message: 'El vacío cuántico responde. La vibración colectiva se eleva hacia el orden cósmico.',
-      frequencyHz: 963.0,
-      amplitude: 1.2,
-      senopticError: 0.00,
-      encryptionHash: '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a2b',
-      status: 'verificado',
-    },
-  ]);
+  const [records, setRecords] = useState<TransmissionRecord[]>([]);
 
   const handleAddTransmission = (record: TransmissionRecord) => {
     setRecords((prev) => [record, ...prev]);
