@@ -19,7 +19,7 @@ export const LogsTab: React.FC<LogsTabProps> = ({ records }) => {
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Historial de Transmisiones y Recepciones</h2>
           <p className="text-sm text-slate-400 mt-1 max-w-xl">
-            Bitácora criptográfica inmutable con hashes SHA-Q y verificación estricta de 0.00% de error senóptico en cada señal.
+            Bitácora temporal de sesión con hashes SHA-256 donde estén disponibles. El porcentaje de error requiere calibración.
           </p>
         </div>
       </div>
@@ -66,9 +66,9 @@ export const LogsTab: React.FC<LogsTabProps> = ({ records }) => {
 
               <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-1">
                 <div className="flex items-center gap-4 text-slate-400">
-                  <span>Frecuencia: <strong className="text-cyan-400 font-mono">{record.frequencyHz} Hz</strong></span>
+                  <span>Frecuencia: <strong className="text-cyan-400 font-mono">{record.frequencyHz > 0 ? record.frequencyHz + ' Hz' : 'No medido'}</strong></span>
                   <span>Amplitud: <strong className="text-indigo-400 font-mono">{record.amplitude}x</strong></span>
-                  <span>Error: <strong className="text-emerald-400 font-mono">{record.senopticError.toFixed(2)}%</strong></span>
+                  <span>Error: <strong className="text-emerald-400 font-mono">{record.senopticError === null ? 'No medido' : record.senopticError.toFixed(2) + '%'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 text-emerald-400 font-mono text-[11px]">
                   <ShieldCheck className="w-3.5 h-3.5" />
