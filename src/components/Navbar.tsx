@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppMode } from '../types';
-import { Radio, Mic, Box, FileText, Image as ImageIcon, Zap, Download } from 'lucide-react';
+import { Radio, Mic, Box, FileText, Image as ImageIcon, Zap, Download, Headphones } from 'lucide-react';
 
 interface NavbarProps {
   currentMode: AppMode;
@@ -51,6 +51,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentMode, setMode }) => {
           <span>Vacío Cuántico RX</span>
         </button>
         <button
+          onClick={() => setMode('recorder')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg transition-all ${
+            currentMode === 'recorder' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm' : 'hover:text-white hover:bg-slate-950'
+          }`}
+        >
+          <Headphones className="w-3.5 h-3.5" />
+          <span>Grabador AUX</span>
+        </button>
+        <button
           onClick={() => setMode('spatial')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg transition-all ${
             currentMode === 'spatial' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-sm' : 'hover:text-white hover:bg-slate-950'
@@ -75,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentMode, setMode }) => {
           }`}
         >
           <ImageIcon className="w-3.5 h-3.5" />
-          <span>Planos Conceptuales</span>
+          <span>Planos</span>
         </button>
       </nav>
 
@@ -94,11 +103,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentMode, setMode }) => {
           <span>0.00% Error</span>
         </div>
         <button
-          onClick={() => setMode('rx')}
+          onClick={() => setMode('recorder')}
           className="px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 rounded-xl shadow-lg shadow-cyan-500/25 transition-all whitespace-nowrap shrink-0 flex items-center gap-2"
         >
-          <Mic className="w-3.5 h-3.5" />
-          <span>Escaneo Cuántico</span>
+          <Headphones className="w-3.5 h-3.5" />
+          <span>Grabar con Audífono</span>
         </button>
       </div>
     </header>

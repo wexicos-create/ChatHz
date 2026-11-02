@@ -1,4 +1,4 @@
-export type AppMode = 'tx' | 'rx' | 'spatial' | 'logs' | 'blueprints';
+export type AppMode = 'tx' | 'rx' | 'spatial' | 'logs' | 'blueprints' | 'recorder';
 
 export interface TransmissionRecord {
   id: string;

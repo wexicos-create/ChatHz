@@ -6,6 +6,7 @@ import { ReceiverTab } from './components/ReceiverTab';
 import { ThreeQuantumScene } from './components/ThreeQuantumScene';
 import { LogsTab } from './components/LogsTab';
 import { BlueprintsTab } from './components/BlueprintsTab';
+import { AudioRecorderTab } from './components/AudioRecorderTab';
 import { Smartphone, Monitor } from 'lucide-react';
 
 export default function App() {
@@ -66,8 +67,11 @@ export default function App() {
             onAddTransmission={handleAddTransmission}
             isReceiving={isReceiving}
             setIsReceiving={setIsReceiving}
+            setActiveHz={setActiveHz}
           />
         );
+      case 'recorder':
+        return <AudioRecorderTab onAddTransmission={handleAddTransmission} />;
       case 'spatial':
         return (
           <div className="w-full h-[calc(100vh-4rem)]">
@@ -97,7 +101,9 @@ export default function App() {
         <div className="flex items-center gap-2 text-slate-400">
           <span className="font-semibold text-cyan-400">Pláticas Ancestrales</span>
           <span>/</span>
-          <span className="capitalize">{mode === 'spatial' ? 'Espectro 3D' : mode === 'tx' ? 'Transmisor TX' : mode === 'rx' ? 'Receptor RX' : mode === 'logs' ? 'Historial Cifrado' : 'Planos Conceptuales'}</span>
+          <span className="capitalize">
+            {mode === 'spatial' ? 'Espectro 3D' : mode === 'tx' ? 'Transmisor TX' : mode === 'rx' ? 'Receptor RX' : mode === 'recorder' ? 'Grabador AUX' : mode === 'logs' ? 'Historial Cifrado' : 'Planos Conceptuales'}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
