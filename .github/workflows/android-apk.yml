@@ -25,15 +25,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Android platform and build tools
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Install frontend dependencies and validate
         run: |
           npm install --no-audit --no-fund
           npm run lint
           npm run build
+      - name: Android platform (preinstalled SDK)
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Prepare Android Gradle project
         run: bash scripts/android-prepare.sh
       - name: Compile installable debug APK with Gradle
