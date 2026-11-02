@@ -1,5 +1,6 @@
 import { TransmissionRecord } from '../types';
 
+/** Canal local entre pestañas del mismo origen; no es red física ni comunicación cuántica. */
 class QuantumNetworkService {
   private channel: BroadcastChannel | null = null;
   private listeners: ((record: TransmissionRecord) => void)[] = [];
@@ -24,7 +25,7 @@ class QuantumNetworkService {
       if (this.channel) {
         this.channel.postMessage(record);
       }
-      // Also persist to localStorage for cross-tab sync without BroadcastChannel
+      // Cola local de sesión; no implica transporte entre dispositivos.
       const existing = JSON.parse(localStorage.getItem('chatz_network_queue') || '[]');
       localStorage.setItem('chatz_network_queue', JSON.stringify([record, ...existing].slice(0, 50)));
     } catch (e) {
