@@ -19,8 +19,8 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
   setMode,
 }) => {
   const [message, setMessage] = useState('');
-  const [targetNode, setTargetNode] = useState('Red Cuántica P2P (Global)');
-  const [encryptionProtocol, setEncryptionProtocol] = useState('AES-Senoptic-99');
+  const [targetNode, setTargetNode] = useState('Canal local entre pestañas');
+  const [encryptionProtocol, setEncryptionProtocol] = useState('SHA-256 (integridad)');
   const [amplitude, setAmplitude] = useState(1.0);
   const [successNotice, setSuccessNotice] = useState(false);
 
@@ -48,42 +48,44 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
     }
   };
 
-  const handleTransmit = (e: React.FormEvent) => {
+  const handleTransmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
-
+    const content = message.trim();
     setIsTransmitting(true);
     playAudioTone(activeHz);
-
-    setTimeout(() => {
-      setIsTransmitting(false);
-      setSuccessNotice(true);
-
+    try {
+      // SHA-256 permite verificar integridad del texto, pero no ofrece cifrado.
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(content));
+      const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
       const newRecord: TransmissionRecord = {
-        id: 'TX-' + Math.random().toString(36).substring(2, 9).toUpperCase(),
+        id: 'TX-' + crypto.randomUUID().slice(0, 8).toUpperCase(),
         timestamp: Date.now(),
         direction: 'TX',
-        source: 'Operador Terrestre',
+        source: 'Operador local',
         target: targetNode,
-        message: message,
+        message: content,
         frequencyHz: activeHz,
-        amplitude: amplitude,
-        senopticError: 0.00,
-        encryptionHash: '0x' + Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+        amplitude,
+        senopticError: null,
+        encryptionHash: 'sha256:' + hash,
         status: 'completado',
       };
-
       onAddTransmission(newRecord);
       quantumNetwork.broadcast({
-        ...newRecord,
-        direction: 'RX',
-        source: `Transmisión Senoidal (${activeHz} Hz)`,
-        target: 'Operador Terrestre (Recepción)',
+        ...newRecord, direction: 'RX',
+        source: 'Otra pestaña del mismo origen',
+        target: 'Receptor local',
       });
-
       setMessage('');
-      setTimeout(() => setSuccessNotice(false), 4000);
-    }, 1500);
+      setSuccessNotice(true);
+      window.setTimeout(() => setSuccessNotice(false), 4000);
+    } catch (error) {
+      console.error('No se pudo transmitir:', error);
+      alert('No se pudo registrar el mensaje. Se requiere conexión segura para SHA-256.');
+    } finally {
+      window.setTimeout(() => setIsTransmitting(false), 3000);
+    }
   };
 
   return (
@@ -99,7 +101,7 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Transmisor de Ondas Senoidales</h2>
             <p className="text-sm text-slate-400 mt-1 max-w-xl">
-              Codifica tu mensaje en frecuencias acústicas en Hz y emítelo por audio y red P2P con cifrado senóptico de alta precisión (0.00% de error).
+              Genera un tono senoidal y comparte el texto entre pestañas del mismo origen. El tono todavía no codifica el mensaje; no existe conexión P2P entre teléfonos.
             </p>
           </div>
           <div className="flex items-center gap-3 bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3">
@@ -117,7 +119,7 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
           <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           <div>
             <p className="text-sm font-semibold">¡Transmisión Senoidal Exitosa!</p>
-            <p className="text-xs text-emerald-400/80">Onda acústica emitida en {activeHz} Hz con cifrado SHA-Q y 0.00% de error.</p>
+            <p className="text-xs text-emerald-400/80">Tono generado y mensaje local registrado con hash SHA-256.</p>
           </div>
         </div>
       )}
@@ -162,7 +164,7 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
               onChange={(e) => setTargetNode(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
             >
-              <option value="Red Cuántica P2P (Global)">Red Cuántica P2P (Global)</option>
+              <option value="Canal local entre pestañas">Canal local entre pestañas (mismo origen)</option>
               <option value="Extraterrestre (Pléyades Sector 7)">Extraterrestre (Pléyades Sector 7)</option>
               <option value="Divine Node (Alpha-9 / Fuente Central)">Divine Node (Alpha-9 / Fuente Central)</option>
               <option value="Consejo Ancestral (Sirio B)">Consejo Ancestral (Sirio B)</option>
@@ -170,14 +172,13 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-300">Protocolo de Cifrado Senóptico</label>
+            <label className="text-xs font-semibold text-slate-300">Verificación de integridad (sin cifrado)</label>
             <select
               value={encryptionProtocol}
               onChange={(e) => setEncryptionProtocol(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
             >
-              <option value="AES-Senoptic-99">AES-Senoptic-99 (0.00% Error Garantizado)</option>
-              <option value="Quantum-Hash-SHAQ">Quantum-Hash SHA-Q (Criptografía Cuántica)</option>
+              <option value="SHA-256 (integridad)">SHA-256 real (hash, sin cifrado)</option>
             </select>
           </div>
         </div>
@@ -215,7 +216,7 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-slate-300">Mensaje a Encriptar en la Frecuencia</label>
+          <label className="text-xs font-semibold text-slate-300">Texto a compartir entre pestañas</label>
           <textarea
             rows={4}
             value={message}
@@ -229,7 +230,7 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-800">
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Cifrado SHA-Q · 0.00% Error Senóptico.</span>
+            <span>SHA-256 · Integridad del texto · Sin cifrado.</span>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <button
@@ -237,7 +238,7 @@ export const TransmitterTab: React.FC<TransmitterTabProps> = ({
               className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2"
             >
               <Send className="w-4 h-4" />
-              <span>Emitir Audio y Red</span>
+              <span>Emitir tono y mensaje local</span>
             </button>
             <button
               type="button"
