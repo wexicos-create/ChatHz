@@ -9,7 +9,7 @@ export interface TransmissionRecord {
   message: string;
   frequencyHz: number;
   amplitude: number;
-  senopticError: number; // e.g. 0.00%
+  senopticError: number | null; // null: precisión no medida
   encryptionHash: string;
   status: 'completado' | 'transmitiendo' | 'interceptado' | 'verificado';
 }
